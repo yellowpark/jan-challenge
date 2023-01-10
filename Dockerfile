@@ -12,4 +12,4 @@ COPY send.py ./workspace
 
 RUN chmod 0777 -R /usr/src/app
 
-CMD "sleep 30000000"
+CMD "echo sleeping ; sleep 30000000"
