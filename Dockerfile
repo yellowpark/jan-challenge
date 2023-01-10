@@ -12,4 +12,4 @@ COPY send.py ./workspace
 
 RUN chmod 0777 -R /usr/src/app
 
-CMD ["/bin/bash", "while true; do sleep 30; done;" ]
+CMD "while true; do sleep 30; done;"
