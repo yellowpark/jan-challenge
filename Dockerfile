@@ -12,4 +12,4 @@ COPY send.py ./workspace
 
 RUN chmod 0777 -R /usr/src/app
 
-CMD "python3 send.py"
+CMD python3 send.py
