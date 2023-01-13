@@ -5,12 +5,12 @@ def main():
     connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
     channel = connection.channel()
 
-    channel.queue_declare(queue='hello')
+    channel.queue_declare(queue='unpacker-queue')
 
     def callback(ch, method, properties, body):
         print(" [x] Received %r" % body)
     
-    channel.basic_consume(queue='hello',
+    channel.basic_consume(queue='unpacker-queue',
                       auto_ack=True,
                       on_message_callback=callback)
 
