@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 import pika
 
-connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+# note that in the openshift cluster we can simply use the service name 
+# (rabbitmq) to connect to the broker
+connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
 channel = connection.channel()
 
 channel.queue_declare(queue='hello')
