@@ -2,8 +2,6 @@
 from minio import Minio
 from minio.error import S3Error
 
-
-
 def main():
   # Create a client with the MinIO server playground, its access key
   # and secret key.

@@ -1,12 +1,5 @@
 #!/usr/bin/env python
 import pika, sys, os
-import functools
-import logging
-import time
-
-LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
-              '-35s %(lineno) -5d: %(message)s')
-LOGGER = logging.getLogger(__name__)
 
 def main():
     connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
@@ -36,7 +29,7 @@ def on_message(self, _unused_channel, basic_deliver, properties, body):
     :param pika.Spec.BasicProperties: properties
     :param bytes body: The message body
     """
-    LOGGER.info('Received message # %s from %s: %s',
+    print('Received message # %s from %s: %s',
                 basic_deliver.delivery_tag, properties.app_id, body)
 
 if __name__ == '__main__':
