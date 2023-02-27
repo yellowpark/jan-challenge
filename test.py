@@ -27,7 +27,7 @@ class ExampleConsumer(object):
     """
     EXCHANGE = 'message'
     EXCHANGE_TYPE = ExchangeType.topic
-    QUEUE = 'text'
+    QUEUE = 'unpacker-queue'
     ROUTING_KEY = 'example.text'
 
     def __init__(self, amqp_url):
@@ -430,7 +430,7 @@ class ReconnectingExampleConsumer(object):
 
 
 def main():
-    logging.basicConfig(level=logging.DEBUG, format=LOG_FORMAT)
+    logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
     amqp_url = 'amqp://chrisd:chrisd@rabbitmq/%2F'
     consumer = ReconnectingExampleConsumer(amqp_url)
     consumer.run()
