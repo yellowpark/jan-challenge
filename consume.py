@@ -37,7 +37,7 @@ class ExampleConsumer(object):
         self._channel = None
         self._closing = False
         self._consumer_tag = None
-        self._url = "rabbitmq"
+        self._url = amqp_url
 
     def connect(self):
         """This method connects to RabbitMQ, returning the connection handle.
@@ -336,7 +336,7 @@ class ExampleConsumer(object):
 
 def main():
     logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
-    example = ExampleConsumer('amqp://guest:guest@localhost:5672/%2F')
+    example = ExampleConsumer('amqp://guest:guest@rabbitmq')
     try:
         example.run()
     except KeyboardInterrupt:
