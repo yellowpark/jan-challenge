@@ -26,7 +26,7 @@ class ExampleConsumer(object):
     QUEUE = 'unpacker-queue'
     ROUTING_KEY = 'example.text'
 
-    def __init__(self):
+    def __init__(self, amqp_url):
         """Create a new instance of the consumer class, passing in the AMQP
         URL used to connect to RabbitMQ.
 
