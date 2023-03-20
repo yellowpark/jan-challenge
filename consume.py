@@ -6,12 +6,18 @@ import logging
 import time
 import pika
 import os
-from dotenv import load_dotenv
+
 from pika.exchange_type import ExchangeType
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
               '-35s %(lineno) -5d: %(message)s')
 LOGGER = logging.getLogger(__name__)
+
+# Lodookup environment variables
+RABBIT_USER_ENV_VAR = os.environ.get('RABBIT_USER')
+RABBIT_PASS_ENV_VAR = os.environ.get('RABBIT_PASS')
+
+RABBIT_SERVICE = 'rabbitmq'
 
 
 class ExampleConsumer(object):
@@ -27,14 +33,6 @@ class ExampleConsumer(object):
     commands that were issued and that should surface in the output as well.
 
     """
-
-    # Load environment variables
-    load_dotenv()
-
-    RABBIT_USER_ENV_VAR = os.environ.get("RABBIT_USER")
-    RABBIT_PASS_ENV_VAR = os.environ.get("RABBIT_PASS")
-
-    RABBIT_SERVICE = 'rabbitmq'
 
     EXCHANGE = 'message'
     EXCHANGE_TYPE = ExchangeType.topic
