@@ -3,7 +3,7 @@ RUN apk update && apk add --no-cache curl vim bash iputils
 
 WORKDIR /usr/src/app
 
-COPY *.py ./
+COPY unpack.py ./
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 

@@ -5,6 +5,8 @@ import functools
 import logging
 import time
 import pika
+import os
+from dotenv import load_dotenv
 from pika.exchange_type import ExchangeType
 
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
@@ -25,6 +27,15 @@ class ExampleConsumer(object):
     commands that were issued and that should surface in the output as well.
 
     """
+
+    # Load environment variables
+    load_dotenv()
+
+    RABBIT_USER_ENV_VAR = os.environ.get("RABBIT_USER")
+    RABBIT_PASS_ENV_VAR = os.environ.get("RABBIT_PASS")
+
+    RABBIT_SERVICE = 'rabbitmq'
+
     EXCHANGE = 'message'
     EXCHANGE_TYPE = ExchangeType.topic
     QUEUE = 'unpacker-queue'
@@ -431,7 +442,7 @@ class ReconnectingExampleConsumer(object):
 
 def main():
     logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
-    amqp_url = 'amqp://chrisd:chrisd@rabbitmq/%2F'
+    amqp_url = 'amqp://RABBIT_USER_ENV_VAR:RABBIT_PASS_ENV_VAR@RABBIT_SERVICE/%2F'
     consumer = ReconnectingExampleConsumer(amqp_url)
     consumer.run()
 
