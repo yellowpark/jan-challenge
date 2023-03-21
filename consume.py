@@ -25,6 +25,12 @@ RABBIT_PASS_ENV_VAR = os.getenv('RABBIT_PASS')
 
 RABBIT_SERVICE = 'rabbitmq'
 
+EXCHANGE = 'dw'
+EXCHANGE_TYPE = ExchangeType.topic
+QUEUE = 'unpacker-queue'
+FORMATTER_QUEUE = 'formatter-queue'
+ROUTING_KEY = 'unpacker-queue'
+
 class ExampleConsumer(object):
     """This is an example consumer that will handle unexpected interactions
     with RabbitMQ such as channel and connection closures.
@@ -38,12 +44,6 @@ class ExampleConsumer(object):
     commands that were issued and that should surface in the output as well.
 
     """
-
-    EXCHANGE = 'dw'
-    EXCHANGE_TYPE = ExchangeType.topic
-    QUEUE = 'unpacker-queue'
-    FORMATTER_QUEUE = 'formatter-queue'
-    ROUTING_KEY = 'example.text'
 
     def __init__(self, amqp_url):
         """Create a new instance of the consumer class, passing in the AMQP
@@ -73,6 +73,7 @@ class ExampleConsumer(object):
             channel = connection.channel()
 
             channel.basic_publish(EXCHANGE, FORMATTER_QUEUE, body=message)
+            
             print(" [x] Sent %r" % message)
             connection.close()
         except Exception as e:
