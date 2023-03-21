@@ -6,6 +6,9 @@ import logging
 import time
 import pika
 import os
+import json
+
+from dotenv import load_dotenv
 
 from pika.exchange_type import ExchangeType
 
@@ -14,8 +17,11 @@ LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
 LOGGER = logging.getLogger(__name__)
 
 # Lodookup environment variables
-RABBIT_USER_ENV_VAR = os.environ.get('RABBIT_USER')
-RABBIT_PASS_ENV_VAR = os.environ.get('RABBIT_PASS')
+load_dotenv()
+
+# Lodookup environment variables
+RABBIT_USER_ENV_VAR = os.getenv('RABBIT_USER')
+RABBIT_PASS_ENV_VAR = os.getenv('RABBIT_PASS')
 
 RABBIT_SERVICE = 'rabbitmq'
 
@@ -324,6 +330,14 @@ class ExampleConsumer(object):
         LOGGER.info('Received message # %s from %s: %s',
                     basic_deliver.delivery_tag, properties.app_id, body)
         self.acknowledge_message(basic_deliver.delivery_tag)
+
+        # load the message body
+        message_body = json.loads(body)
+
+        print('body:  ' + body)
+
+        print('message_body:  ' + message_body)
+
 
     def acknowledge_message(self, delivery_tag):
         """Acknowledge the message delivery from RabbitMQ by sending a
