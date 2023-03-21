@@ -25,7 +25,7 @@ RABBIT_PASS_ENV_VAR = os.getenv('RABBIT_PASS')
 
 RABBIT_SERVICE = 'rabbitmq'
 
-EXCHANGE = 'message'
+EXCHANGE = 'dw'
 EXCHANGE_TYPE = ExchangeType.topic
 QUEUE = 'unpacker-queue'
 FORMATTER_QUEUE = 'formatter-queue'
