@@ -70,9 +70,15 @@ class ExampleConsumer(object):
         try:
             credentials = pika.PlainCredentials(RABBIT_USER_ENV_VAR, RABBIT_PASS_ENV_VAR)
             connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', credentials=credentials))
+            
             channel = connection.channel()
 
-            channel.basic_publish('dw', 'formatter-queue', body=message)
+            # channel.basic_publish(EXCHANGE, FORMATTER_QUEUE, body=message)
+            channel.basic_publish('dw',
+                'formatter-queue',
+                json.dumps(message),
+                pika.BasicProperties(content_type='text/json',
+                delivery_mode=pika.DeliveryMode.Transient))
             
             print(" [x] Sent %r" % message)
             connection.close()
