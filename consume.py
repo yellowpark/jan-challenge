@@ -15,7 +15,6 @@ from pika.exchange_type import ExchangeType
 LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
               '-35s %(lineno) -5d: %(message)s')
 LOGGER = logging.getLogger(__name__)
-logging.getLogger().addHandler(logging.StreamHandler())
 
 # Lodookup environment variables
 load_dotenv()
@@ -26,6 +25,11 @@ RABBIT_PASS_ENV_VAR = os.getenv('RABBIT_PASS')
 
 RABBIT_SERVICE = 'rabbitmq'
 
+EXCHANGE = 'message'
+EXCHANGE_TYPE = ExchangeType.topic
+QUEUE = 'unpacker-queue'
+FORMATTER_QUEUE = 'formatter-queue'
+ROUTING_KEY = 'example.text'
 
 class ExampleConsumer(object):
     """This is an example consumer that will handle unexpected interactions
@@ -40,11 +44,6 @@ class ExampleConsumer(object):
     commands that were issued and that should surface in the output as well.
 
     """
-
-    EXCHANGE = 'message'
-    EXCHANGE_TYPE = ExchangeType.topic
-    QUEUE = 'unpacker-queue'
-    ROUTING_KEY = 'example.text'
 
     def __init__(self, amqp_url):
         """Create a new instance of the consumer class, passing in the AMQP
@@ -65,6 +64,19 @@ class ExampleConsumer(object):
         # In production, experiment with higher prefetch values
         # for higher consumer throughput
         self._prefetch_count = 1
+
+    def publish_message(message):
+
+        try:
+            credentials = pika.PlainCredentials(RABBIT_USER_ENV_VAR, RABBIT_PASS_ENV_VAR)
+            connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', credentials=credentials))
+            channel = connection.channel()
+
+            channel.basic_publish(EXCHANGE, FORMATTER_QUEUE, body=message)
+            print(" [x] Sent %r" % message)
+            connection.close()
+        except Exception as e:
+            print(f'failed to publish message to broker - {message} - {e}')
 
     def connect(self):
         """This method connects to RabbitMQ, returning the connection handle.
@@ -334,8 +346,9 @@ class ExampleConsumer(object):
 
         print(" [x] Received %r" % body)
 
-        # load the message body
-        # message_body = json.loads(body)
+        self.publish_message("hello")
+
+
 
 
     def acknowledge_message(self, delivery_tag):
