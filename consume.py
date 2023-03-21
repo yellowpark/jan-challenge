@@ -74,11 +74,12 @@ class ExampleConsumer(object):
             channel = connection.channel()
 
             # channel.basic_publish(EXCHANGE, FORMATTER_QUEUE, body=message)
-            channel.basic_publish('dw',
-                'formatter-queue',
-                json.dumps(message),
-                pika.BasicProperties(content_type='text/json',
-                delivery_mode=pika.DeliveryMode.Transient))
+            # channel.basic_publish('dw',
+            #     'formatter-queue',
+            #     json.dumps(message),
+            #     pika.BasicProperties(content_type='text/json',
+            #     delivery_mode=pika.DeliveryMode.Transient))
+            channel.basic_publish(exchange='dw', routing_key='formatter-queue', body=message)
             
             print(" [x] Sent %r" % message)
             connection.close()
