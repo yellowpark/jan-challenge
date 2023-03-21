@@ -451,7 +451,7 @@ class ReconnectingExampleConsumer(object):
 
 
 def main():
-    logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
+    logging.basicConfig(filename='app.log', level=logging.INFO, format=LOG_FORMAT)
     amqp_url = 'amqp://' + RABBIT_USER_ENV_VAR + ':' + RABBIT_PASS_ENV_VAR + '@' + RABBIT_SERVICE + '/%2F'
     consumer = ReconnectingExampleConsumer(amqp_url)
     consumer.run()
