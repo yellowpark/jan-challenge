@@ -336,8 +336,6 @@ class ExampleConsumer(object):
 
         print('body:  ' + body)
 
-        print('message_body:  ' + message_body)
-
 
     def acknowledge_message(self, delivery_tag):
         """Acknowledge the message delivery from RabbitMQ by sending a
