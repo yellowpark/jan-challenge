@@ -40,7 +40,7 @@ class ExampleConsumer(object):
     """
 
     EXCHANGE = 'dw'
-    EXCHANGE_TYPE = ExchangeType.topic
+    EXCHANGE_TYPE = ExchangeType.direct
     QUEUE = 'unpacker-queue'
     FORMATTER_QUEUE = 'formatter-queue'
     ROUTING_KEY = 'unpacker-queue'
