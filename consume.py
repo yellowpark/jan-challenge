@@ -334,7 +334,7 @@ class ExampleConsumer(object):
         # load the message body
         message_body = json.loads(body)
 
-        print('body:  ' + body)
+        print('body:  ' + message_body)
 
 
     def acknowledge_message(self, delivery_tag):
