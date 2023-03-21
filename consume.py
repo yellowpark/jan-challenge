@@ -331,10 +331,10 @@ class ExampleConsumer(object):
                     basic_deliver.delivery_tag, properties.app_id, body)
         self.acknowledge_message(basic_deliver.delivery_tag)
 
-        # load the message body
-        message_body = json.loads(body)
+        print(" [x] Received %r" % body)
 
-        print('body:  ' + message_body)
+        # load the message body
+        # message_body = json.loads(body)
 
 
     def acknowledge_message(self, delivery_tag):
