@@ -72,6 +72,7 @@ class ExampleConsumer(object):
             connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', credentials=credentials))
             
             channel = connection.channel()
+            channel.exchange_declare(exchange='dw', exchange_type='direct')
 
             # channel.basic_publish(EXCHANGE, FORMATTER_QUEUE, body=message)
             # channel.basic_publish('dw',
