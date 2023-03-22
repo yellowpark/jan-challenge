@@ -34,6 +34,7 @@ ROUTING_KEY = 'unpacker-queue'
 
 
 def main():
+    print('opening connection')
     connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
     # logging.basicConfig(filename='app.log', level=logging.INFO, format=LOG_FORMAT)
 
@@ -78,6 +79,7 @@ def publish_message(message):
 
 if __name__ == '__main__':
     try:
+        print('calling main')
         main()
     
     except KeyboardInterrupt:
