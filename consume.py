@@ -53,7 +53,7 @@ client = Minio(
 
 
 def main():
-    print('opening connection')
+    logging.info('opening connection')
 
     credentials = pika.PlainCredentials(RABBIT_USER_ENV_VAR, RABBIT_PASS_ENV_VAR)
     connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', credentials=credentials))
@@ -68,7 +68,7 @@ def main():
 
 def callback(ch, method, properties, body):
 
-    print(" [x] Received %r" % body)
+    logging.info(" [x] Received %r" % body)
 
     publish_message('hello world')
 
@@ -83,10 +83,10 @@ def publish_message(message):
     json_body = json.loads(message)
 
     #check new data type
-    print(type(json_body))
+    logging.info(type(json_body))
 
 
-    print(f'received: {json_body}')
+    logging.info(f'received: {json_body}')
     # event = json.dumps(body.decode())
     records = []
 
@@ -99,9 +99,9 @@ def publish_message(message):
             try:
                 # download the zip file
                 client.fget_object(BUCKET_NAME, key, DOWNLOADED_FILE_NAME)
-                print(f'downloaded {key} from {BUCKET_NAME}')
+                logging.info(f'downloaded {key} from {BUCKET_NAME}')
                 
-                print(f'Unzipped file')
+                logging.info(f'Unzipped file')
 
                 # # unzip each file in memory
                 unzipped = []
@@ -121,7 +121,7 @@ def publish_message(message):
                 # records.append(record)
                     
             except Exception as e:
-                print(f'error processing key [{key}] from bucket [{BUCKET_NAME}] - {e}')
+                logging.info(f'error processing key [{key}] from bucket [{BUCKET_NAME}] - {e}')
 
     print(" [x] Sent %r" % message)                                                                     
     connection.close() 
@@ -131,11 +131,11 @@ def publish_message(message):
 if __name__ == '__main__':
     try:
         logging.basicConfig(filename='app.log', level=logging.INFO, format=LOG_FORMAT)
-        print('calling main')
+        logging.info('calling main')
         main()
     
     except KeyboardInterrupt:
-        print('Interrupted')
+        logging.info('Interrupted')
         try:
             sys.exit(0)
         except SystemExit:
