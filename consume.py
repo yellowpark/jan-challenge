@@ -13,9 +13,9 @@ from dotenv import load_dotenv
 
 from pika.exchange_type import ExchangeType
 
-LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
-              '-35s %(lineno) -5d: %(message)s')
-LOGGER = logging.getLogger(__name__)
+# LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
+#               '-35s %(lineno) -5d: %(message)s')
+# LOGGER = logging.getLogger(__name__)
 
 # Lodookup environment variables
 load_dotenv()
@@ -35,14 +35,18 @@ ROUTING_KEY = 'unpacker-queue'
 
 def main():
     print('opening connection')
-    connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
-    # logging.basicConfig(filename='app.log', level=logging.INFO, format=LOG_FORMAT)
 
+
+    credentials = pika.PlainCredentials(RABBIT_USER_ENV_VAR, RABBIT_PASS_ENV_VAR)
+    connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', credentials=credentials))
     channel = connection.channel()
     channel.queue_declare(queue=QUEUE)
     channel.basic_consume(queue=QUEUE,
-                    auto_ack=True,
-                    on_message_callback=callback)
+                          auto_ack=True,
+                          on_message_callback=callback)
+
+    print('listening for notifications..')
+    channel.start_consuming()
 
     print(' [*] Waiting for messages. To exit press CTRL+C')
     channel.start_consuming()
