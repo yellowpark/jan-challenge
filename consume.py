@@ -88,18 +88,7 @@ def callback(ch, method, properties, body):
 
     logger.info(" [x] Received %r" % body)
 
-    publish_message(body)
-
-def publish_message(message): 
-    logger.info('received message')                                                                          
-    credentials = pika.PlainCredentials(RABBIT_USER_ENV_VAR, RABBIT_PASS_ENV_VAR)
-    connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', credentials=credentials))
-                                                                                                        
-    channel = connection.channel()                                                                      
-    channel.exchange_declare(exchange='dw', exchange_type='direct')              
-    channel.basic_publish(exchange='dw', routing_key='formatter-queue', body=message)   
-
-    json_body = json.loads(message)
+    json_body = json.loads(body)
 
     #check new data type
     # event = json.dumps(body.decode())
@@ -142,8 +131,25 @@ def publish_message(message):
             except Exception as e:
                 logger.info('error processing key %s, from bucket %s, error message: ', key, BUCKET_NAME, e)
 
-    logger.info('sent message')                                                                     
 
+        publish_message(records)
+
+def publish_message(message): 
+    logger.info('received message') 
+
+    try:                                                                     
+        credentials = pika.PlainCredentials(RABBIT_USER_ENV_VAR, RABBIT_PASS_ENV_VAR)
+        connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', credentials=credentials))
+                                                                                                            
+        channel = connection.channel()                                                                      
+        channel.exchange_declare(exchange='dw', exchange_type='direct')              
+        channel.basic_publish(exchange='dw', routing_key='formatter-queue', body=json.dumps(message))   
+
+
+        logger.info('sent message')                                                                     
+    except Exception as e:
+                logger.info('error publishing message, error message: ', e)
+                
     connection.close() 
 
 
