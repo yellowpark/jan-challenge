@@ -3,7 +3,7 @@
 import pika, sys, os
 
 import functools
-import logging
+# import logging
 import time
 import pika
 import os
@@ -36,7 +36,6 @@ ROUTING_KEY = 'unpacker-queue'
 def main():
     print('opening connection')
 
-
     credentials = pika.PlainCredentials(RABBIT_USER_ENV_VAR, RABBIT_PASS_ENV_VAR)
     connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', credentials=credentials))
     channel = connection.channel()
@@ -48,9 +47,6 @@ def main():
     print('listening for notifications..')
     channel.start_consuming()
 
-    print(' [*] Waiting for messages. To exit press CTRL+C')
-    channel.start_consuming()
-
 def callback(ch, method, properties, body):
     # callback for message
     # self.acknowledge_message(basic_deliver.delivery_tag)
@@ -59,27 +55,6 @@ def callback(ch, method, properties, body):
 
     # publish_message('hello world')
 
-def publish_message(message):
-
-    try:
-        credentials = pika.PlainCredentials(RABBIT_USER_ENV_VAR, RABBIT_PASS_ENV_VAR)
-        connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', credentials=credentials))
-        
-        channel = connection.channel()
-        # channel.exchange_declare(exchange='dw', exchange_type='direct')
-
-        # channel.basic_publish(EXCHANGE, FORMATTER_QUEUE, body=message)
-        # channel.basic_publish('dw',
-        #     'formatter-queue',
-        #     json.dumps(message),
-        #     pika.BasicProperties(content_type='text/json',
-        #     delivery_mode=pika.DeliveryMode.Transient))
-        channel.basic_publish(exchange='dw', routing_key='formatter-queue', body=message, delivery_mode=pika.DeliveryMode.Transient)
-        
-        print(" [x] Sent %r" % message)
-        connection.close()
-    except Exception as e:
-        print(f'failed to publish message to broker - {message} - {e}')
 
 if __name__ == '__main__':
     try:
