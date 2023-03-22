@@ -40,7 +40,7 @@ ROUTING_KEY = 'unpacker-queue'
 
 BUCKET_NAME = "input"
 UNPACKED_BUCKET_NAME = "unpacked"
-DOWNLOADED_FILE_NAME = "/temp/temp.zip"
+DOWNLOADED_FILE_NAME = "temp.zip"
 
 
 # Create a client with the MinIO server playground, its access key
@@ -140,7 +140,7 @@ def publish_message(message):
                 records.append(record)
                     
             except Exception as e:
-                logger.info('error processing key [{key}] from bucket [{BUCKET_NAME}] - {e}')
+                logger.info('error processing key %s, from bucket %s, error message: ', key, BUCKET_NAME, e)
 
     logger.info('sent message')                                                                     
 
