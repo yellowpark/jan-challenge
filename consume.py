@@ -3,7 +3,7 @@
 import pika, sys, os
 
 import functools
-# import logging
+import logging
 import time
 import pika
 import os
@@ -13,9 +13,9 @@ from dotenv import load_dotenv
 
 from pika.exchange_type import ExchangeType
 
-# LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
-#               '-35s %(lineno) -5d: %(message)s')
-# LOGGER = logging.getLogger(__name__)
+LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
+              '-35s %(lineno) -5d: %(message)s')
+LOGGER = logging.getLogger(__name__)
 
 # Lodookup environment variables
 load_dotenv()
@@ -48,16 +48,26 @@ def main():
     channel.start_consuming()
 
 def callback(ch, method, properties, body):
-    # callback for message
-    # self.acknowledge_message(basic_deliver.delivery_tag)
 
     print(" [x] Received %r" % body)
 
-    # publish_message('hello world')
+    publish_message('hello world')
+
+def publish_message(message):                                                                           
+    credentials = pika.PlainCredentials(RABBIT_USER_ENV_VAR, RABBIT_PASS_ENV_VAR)
+    connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', credentials=credentials))
+                                                                                                        
+    channel = connection.channel()                                                                      
+    channel.exchange_declare(exchange='dw', exchange_type='direct')              
+    channel.basic_publish(exchange='dw', routing_key='formatter-queue', body=message)                   
+    print(" [x] Sent %r" % message)                                                                     
+    connection.close() 
+
 
 
 if __name__ == '__main__':
     try:
+        logging.basicConfig(filename='app.log', level=logging.INFO, format=LOG_FORMAT)
         print('calling main')
         main()
     
