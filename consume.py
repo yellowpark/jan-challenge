@@ -131,7 +131,7 @@ def publish_message(message):
                         print(file)
 
                         # post file to minio in its own folder
-                        client.fput_object(UNPACKED_BUCKET_NAME, 'newfolder/' + file, file)
+                        client.fput_object(UNPACKED_BUCKET_NAME, folder_name + '/' + file, file)
 
                         unzipped.append({'id': 1, 'key': folder_name + '/' + file, 'bucket': UNPACKED_BUCKET_NAME})
 
