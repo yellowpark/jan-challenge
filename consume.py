@@ -40,7 +40,7 @@ class ExampleConsumer(object):
     """
 
     EXCHANGE = 'dw'
-    EXCHANGE_TYPE = ExchangeType.topic
+    EXCHANGE_TYPE = ExchangeType.direct
     QUEUE = 'unpacker-queue'
     FORMATTER_QUEUE = 'formatter-queue'
     ROUTING_KEY = 'unpacker-queue'
@@ -80,7 +80,7 @@ class ExampleConsumer(object):
             #     json.dumps(message),
             #     pika.BasicProperties(content_type='text/json',
             #     delivery_mode=pika.DeliveryMode.Transient))
-            channel.basic_publish(exchange='dw', routing_key='formatter-queue', body=message)
+            channel.basic_publish(exchange='dw', routing_key='formatter-queue', body=message, delivery_mode=pika.DeliveryMode.Transient)
             
             print(" [x] Sent %r" % message)
             connection.close()
