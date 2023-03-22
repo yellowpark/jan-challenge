@@ -35,6 +35,8 @@ ROUTING_KEY = 'unpacker-queue'
 
 def main():
     connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq'))
+    logging.basicConfig(filename='app.log', level=logging.INFO, format=LOG_FORMAT)
+    
     channel = connection.channel()
 
     channel.queue_declare(queue='unpacker-queue')
