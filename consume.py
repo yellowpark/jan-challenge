@@ -53,6 +53,7 @@ client = Minio(
 
 
 def main():
+    logging.basicConfig(filename='app.log', level=logging.INFO, format=LOG_FORMAT)
     logging.info('opening connection')
 
     credentials = pika.PlainCredentials(RABBIT_USER_ENV_VAR, RABBIT_PASS_ENV_VAR)
@@ -130,8 +131,6 @@ def publish_message(message):
 
 if __name__ == '__main__':
     try:
-        logging.basicConfig(filename='app.log', level=logging.INFO, format=LOG_FORMAT)
-        logging.info('calling main')
         main()
     
     except KeyboardInterrupt:
