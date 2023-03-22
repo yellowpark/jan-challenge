@@ -2,12 +2,13 @@
 
 import pika, sys, os
 
-import functools
 import logging
 import time
 import pika
 import os
 import json
+import time
+import zipfile
 
 from minio import Minio
 from minio.error import S3Error
@@ -15,9 +16,9 @@ from dotenv import load_dotenv
 
 from pika.exchange_type import ExchangeType
 
-LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
-              '-35s %(lineno) -5d: %(message)s')
-LOGGER = logging.getLogger(__name__)
+# LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
+#               '-35s %(lineno) -5d: %(message)s')
+# LOGGER = logging.getLogger(__name__)
 
 # Lodookup environment variables
 load_dotenv()
@@ -39,7 +40,7 @@ ROUTING_KEY = 'unpacker-queue'
 
 BUCKET_NAME = "input"
 UNPACKED_BUCKET_NAME = "unpacked"
-DOWNLOADED_FILE_NAME = "temp.zip"
+DOWNLOADED_FILE_NAME = "/temp/temp.zip"
 
 
 # Create a client with the MinIO server playground, its access key
@@ -101,10 +102,6 @@ def publish_message(message):
     json_body = json.loads(message)
 
     #check new data type
-    # logging.info(type(json_body))
-
-
-    # logging.info('received: {json_body}')
     # event = json.dumps(body.decode())
     records = []
 
@@ -117,26 +114,30 @@ def publish_message(message):
             try:
                 # download the zip file
                 client.fget_object(BUCKET_NAME, key, DOWNLOADED_FILE_NAME)
-                logger.info('downloaded {key} from {BUCKET_NAME}')
+                logger.info('downloaded %s, from %s', key, BUCKET_NAME)
                 
                 logger.info('Unzipped file')
 
-                # # unzip each file in memory
+                # unzip each file in memory
                 unzipped = []
 
-                # with zipfile.ZipFile(DOWNLOADED_FILE_NAME) as archive:
-                #     archive.extractall()
-                #     for file in archive.namelist():
-                #         print(file)
+                # name the folder using now time
+                folder_name = time.strftime("%Y%m%d-%H%M%S")
 
-                #         # post file to minio in its own folder
-                #         client.fput_object(UNPACKED_BUCKET_NAME, 'newfolder/' + file, file)
 
-                #         unzipped.append({'id': str(uuid.uuid4()), 'key': 'newfolder/' + file, 'bucket': UNPACKED_BUCKET_NAME})
+                with zipfile.ZipFile(DOWNLOADED_FILE_NAME) as archive:
+                    archive.extractall()
+                    for file in archive.namelist():
+                        print(file)
+
+                        # post file to minio in its own folder
+                        client.fput_object(UNPACKED_BUCKET_NAME, 'newfolder/' + file, file)
+
+                        unzipped.append({'id': 1, 'key': folder_name + '/' + file, 'bucket': UNPACKED_BUCKET_NAME})
 
                 # update event
-                # record['unzipped'] = unzipped
-                # records.append(record)
+                record['unzipped'] = unzipped
+                records.append(record)
                     
             except Exception as e:
                 logger.info('error processing key [{key}] from bucket [{BUCKET_NAME}] - {e}')
