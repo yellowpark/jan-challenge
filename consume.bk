@@ -80,7 +80,7 @@ class ExampleConsumer(object):
             #     json.dumps(message),
             #     pika.BasicProperties(content_type='text/json',
             #     delivery_mode=pika.DeliveryMode.Transient))
-            channel.basic_publish(exchange='dw', routing_key='formatter-queue', body=message, delivery_mode=pika.DeliveryMode.Transient)
+            channel.basic_publish(exchange='dw', routing_key='formatter-queue', body=message)
             
             print(" [x] Sent %r" % message)
             connection.close()

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env/python
 import pika, sys, os
 
 def main():
