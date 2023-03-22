@@ -51,10 +51,27 @@ client = Minio(
     secure=False
 )
 
+# create logger
+logger = logging.getLogger('simple_example')
+logger.setLevel(logging.INFO)
+
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+# create formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# add formatter to ch
+ch.setFormatter(formatter)
+
+# add ch to logger
+logger.addHandler(ch)
+
 
 def main():
-    logging.basicConfig(filename='app.log', level=logging.INFO, format=LOG_FORMAT)
-    logging.info('opening connection')
+    
+    logger.info('opening connection')
 
     credentials = pika.PlainCredentials(RABBIT_USER_ENV_VAR, RABBIT_PASS_ENV_VAR)
     connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', credentials=credentials))
@@ -68,12 +85,12 @@ def main():
 
 def callback(ch, method, properties, body):
 
-    logging.info(" [x] Received %r" % body)
+    logger.info(" [x] Received %r" % body)
 
-    publish_message('hello world')
+    publish_message(body)
 
 def publish_message(message): 
-    logging.info('received message')                                                                          
+    logger.info('received message')                                                                          
     credentials = pika.PlainCredentials(RABBIT_USER_ENV_VAR, RABBIT_PASS_ENV_VAR)
     connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', credentials=credentials))
                                                                                                         
@@ -100,9 +117,9 @@ def publish_message(message):
             try:
                 # download the zip file
                 client.fget_object(BUCKET_NAME, key, DOWNLOADED_FILE_NAME)
-                logging.info('downloaded {key} from {BUCKET_NAME}')
+                logger.info('downloaded {key} from {BUCKET_NAME}')
                 
-                logging.info('Unzipped file')
+                logger.info('Unzipped file')
 
                 # # unzip each file in memory
                 unzipped = []
@@ -122,9 +139,10 @@ def publish_message(message):
                 # records.append(record)
                     
             except Exception as e:
-                logging.info('error processing key [{key}] from bucket [{BUCKET_NAME}] - {e}')
+                logger.info('error processing key [{key}] from bucket [{BUCKET_NAME}] - {e}')
 
-    print(" [x] Sent %r" % message)                                                                     
+    logger.info('sent message')                                                                     
+
     connection.close() 
 
 
@@ -134,7 +152,7 @@ if __name__ == '__main__':
         main()
     
     except KeyboardInterrupt:
-        logging.info('Interrupted')
+        logger.info('Interrupted')
         try:
             sys.exit(0)
         except SystemExit:
