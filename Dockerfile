@@ -11,4 +11,4 @@ RUN chmod 0777 -R /usr/src/app
 RUN pip --version 
 RUN python --version
 
-CMD python3 sleep.py
+CMD python3 consume.py

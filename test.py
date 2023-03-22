@@ -77,15 +77,12 @@ def main():
 
                         # post file to minio in its own folder
                         client.fput_object(UNPACKED_BUCKET_NAME, 'newfolder/' + file, file)
-                        
-                    #     # post file to minio and add to record
-                    #     client.put_object(Body=file, Bucket=UNPACKED_BUCKET_NAME, Key=file_name)
-                    #     # unpacked.append({'id': str(uuid.uuid4()), 'key': file_name, 'bucket': UNPACKED_BUCKET_NAME})
-                    #     print(f'posted {file_name} to bucket {UNPACKED_BUCKET_NAME}')
 
-                # # update event
-                # record['unpacked'] = unpacked
-                # records.append(record)
+                        unzipped.append({'id': str(uuid.uuid4()), 'key': 'newfolder/' + file, 'bucket': UNPACKED_BUCKET_NAME})
+
+                # update event
+                record['unzipped'] = unzipped
+                records.append(record)
                     
             except Exception as e:
                 print(f'error processing key [{key}] from bucket [{BUCKET_NAME}] - {e}')
