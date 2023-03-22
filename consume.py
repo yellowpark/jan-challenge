@@ -25,6 +25,9 @@ load_dotenv()
 # Lodookup environment variables
 RABBIT_USER_ENV_VAR = os.getenv('RABBIT_USER')
 RABBIT_PASS_ENV_VAR = os.getenv('RABBIT_PASS')
+MINIO_ENDPOINT_VAR = os.getenv('MINIO_ENDPOINT')
+MINIO_ACCESS_KEY_VAR = os.getenv('MINIO_ACCESS_KEY')
+MINIO_SECRET_KEY_VAR = os.getenv('MINIO_SECRET_KEY')
 
 RABBIT_SERVICE = 'rabbitmq'
 
@@ -37,6 +40,7 @@ ROUTING_KEY = 'unpacker-queue'
 BUCKET_NAME = "input"
 UNPACKED_BUCKET_NAME = "unpacked"
 DOWNLOADED_FILE_NAME = "temp.zip"
+
 
 # Create a client with the MinIO server playground, its access key
 # and secret key.
