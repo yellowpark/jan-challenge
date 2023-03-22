@@ -64,7 +64,6 @@ def main():
                           auto_ack=True,
                           on_message_callback=callback)
 
-    print('listening for notifications..')
     channel.start_consuming()
 
 def callback(ch, method, properties, body):
@@ -73,7 +72,8 @@ def callback(ch, method, properties, body):
 
     publish_message('hello world')
 
-def publish_message(message):                                                                           
+def publish_message(message): 
+    logging.info('received message')                                                                          
     credentials = pika.PlainCredentials(RABBIT_USER_ENV_VAR, RABBIT_PASS_ENV_VAR)
     connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', credentials=credentials))
                                                                                                         
@@ -84,10 +84,10 @@ def publish_message(message):
     json_body = json.loads(message)
 
     #check new data type
-    logging.info(type(json_body))
+    # logging.info(type(json_body))
 
 
-    logging.info(f'received: {json_body}')
+    # logging.info('received: {json_body}')
     # event = json.dumps(body.decode())
     records = []
 
@@ -100,9 +100,9 @@ def publish_message(message):
             try:
                 # download the zip file
                 client.fget_object(BUCKET_NAME, key, DOWNLOADED_FILE_NAME)
-                logging.info(f'downloaded {key} from {BUCKET_NAME}')
+                logging.info('downloaded {key} from {BUCKET_NAME}')
                 
-                logging.info(f'Unzipped file')
+                logging.info('Unzipped file')
 
                 # # unzip each file in memory
                 unzipped = []
@@ -122,7 +122,7 @@ def publish_message(message):
                 # records.append(record)
                     
             except Exception as e:
-                logging.info(f'error processing key [{key}] from bucket [{BUCKET_NAME}] - {e}')
+                logging.info('error processing key [{key}] from bucket [{BUCKET_NAME}] - {e}')
 
     print(" [x] Sent %r" % message)                                                                     
     connection.close() 
