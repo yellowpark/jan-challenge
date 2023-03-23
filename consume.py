@@ -127,7 +127,7 @@ def callback(ch, method, properties, body):
                 records.append(record)
 
                 # cleanup the folder
-                shutil.rmtree('temp-dir')
+                shutil.rmtree(extract_folder)
                     
             except Exception as e:
                 logger.info('error processing key %s, from bucket %s, error message: %s', key, BUCKET_NAME, e)
