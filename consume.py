@@ -104,21 +104,17 @@ def callback(ch, method, properties, body):
 
 
                 input_zip=zipfile.ZipFile(DOWNLOADED_FILE_NAME)
+                
+                # create a counter to use as the id of the file in the json object
+                i = 0
                 for file_name in input_zip.namelist():
                     logger.info('file downloaded %s', file_name)
 
-                with zipfile.ZipFile(DOWNLOADED_FILE_NAME) as archive:
-                    i = 0
-                    input_zip.read(archive)
-                    
-                    for file in input_zip.namelist():
+                    # post file to minio in its own folder
+                    client.fput_object(UNPACKED_BUCKET_NAME, folder_name + '/' + file_name, file_name)
 
-                        # post file to minio in its own folder
-                        client.fput_object(UNPACKED_BUCKET_NAME, folder_name + '/' + file, file)
-
-                        i += 1
-                        unzipped.append({'id': i, 'file': folder_name + '/' + file, 'bucket': UNPACKED_BUCKET_NAME})
-
+                    i += 1
+                    unzipped.append({'id': i, 'file': folder_name + '/' + file_name, 'bucket': UNPACKED_BUCKET_NAME})
 
 
                 # with zipfile.ZipFile(DOWNLOADED_FILE_NAME) as archive:
