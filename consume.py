@@ -126,8 +126,9 @@ def callback(ch, method, properties, body):
                 record['unzipped'] = unzipped
                 records.append(record)
 
-                # cleanup the folder
+                # cleanup the folder and downloaded zip file
                 shutil.rmtree(extract_folder)
+                os.remove(DOWNLOADED_FILE_NAME)
                     
             except Exception as e:
                 logger.info('error processing key %s, from bucket %s, error message: %s', key, BUCKET_NAME, e)
