@@ -16,14 +16,9 @@ from dotenv import load_dotenv
 
 from pika.exchange_type import ExchangeType
 
-# LOG_FORMAT = ('%(levelname) -10s %(asctime)s %(name) -30s %(funcName) '
-#               '-35s %(lineno) -5d: %(message)s')
-# LOGGER = logging.getLogger(__name__)
-
-# Lodookup environment variables
+# Lookup environment variables
 load_dotenv()
 
-# Lodookup environment variables
 RABBIT_USER_ENV_VAR = os.getenv('RABBIT_USER')
 RABBIT_PASS_ENV_VAR = os.getenv('RABBIT_PASS')
 MINIO_ENDPOINT_VAR = os.getenv('MINIO_ENDPOINT')
@@ -31,7 +26,6 @@ MINIO_ACCESS_KEY_VAR = os.getenv('MINIO_ACCESS_KEY')
 MINIO_SECRET_KEY_VAR = os.getenv('MINIO_SECRET_KEY')
 
 RABBIT_SERVICE = 'rabbitmq'
-
 EXCHANGE = 'dw'
 EXCHANGE_TYPE = ExchangeType.direct
 QUEUE = 'unpacker-queue'
@@ -43,8 +37,7 @@ UNPACKED_BUCKET_NAME = "unpacked"
 DOWNLOADED_FILE_NAME = "temp.zip"
 
 
-# Create a client with the MinIO server playground, its access key
-# and secret key.
+# Create a client with the MinIO server playground, its access key and secret key.
 client = Minio(
     endpoint=MINIO_ENDPOINT_VAR,
     access_key=MINIO_ACCESS_KEY_VAR,
@@ -71,7 +64,6 @@ logger.addHandler(ch)
 
 
 def main():
-    
     logger.info('opening connection')
 
     credentials = pika.PlainCredentials(RABBIT_USER_ENV_VAR, RABBIT_PASS_ENV_VAR)
@@ -85,7 +77,6 @@ def main():
     channel.start_consuming()
 
 def callback(ch, method, properties, body):
-
     logger.info(" [x] Received %r" % body)
 
     json_body = json.loads(body)
@@ -104,8 +95,6 @@ def callback(ch, method, properties, body):
                 # download the zip file
                 client.fget_object(BUCKET_NAME, key, DOWNLOADED_FILE_NAME)
                 logger.info('downloaded %s, from %s', key, BUCKET_NAME)
-                
-                logger.info('Unzipped file')
 
                 # unzip each file in memory
                 unzipped = []
@@ -113,8 +102,8 @@ def callback(ch, method, properties, body):
                 # name the folder using now time
                 folder_name = time.strftime("%Y%m%d-%H%M%S")
 
-
                 with zipfile.ZipFile(DOWNLOADED_FILE_NAME) as archive:
+                    i = 0
                     archive.extractall()
                     for file in archive.namelist():
                         print(file)
@@ -122,7 +111,8 @@ def callback(ch, method, properties, body):
                         # post file to minio in its own folder
                         client.fput_object(UNPACKED_BUCKET_NAME, folder_name + '/' + file, file)
 
-                        unzipped.append({'id': 1, 'key': folder_name + '/' + file, 'bucket': UNPACKED_BUCKET_NAME})
+                        i += 1
+                        unzipped.append({'id': i, 'file': folder_name + '/' + file, 'bucket': UNPACKED_BUCKET_NAME})
 
                 # update event
                 record['unzipped'] = unzipped
@@ -135,7 +125,7 @@ def callback(ch, method, properties, body):
         publish_message(records)
 
 def publish_message(message): 
-    logger.info('received message') 
+    logger.info('received message %s', message) 
 
     try:                                                                     
         credentials = pika.PlainCredentials(RABBIT_USER_ENV_VAR, RABBIT_PASS_ENV_VAR)
@@ -145,11 +135,10 @@ def publish_message(message):
         channel.exchange_declare(exchange='dw', exchange_type='direct')              
         channel.basic_publish(exchange='dw', routing_key='formatter-queue', body=json.dumps(message))   
 
-
         logger.info('sent message')                                                                     
     except Exception as e:
                 logger.info('error publishing message, error message: ', e)
-                
+
     connection.close() 
 
 
