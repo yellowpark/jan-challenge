@@ -9,6 +9,7 @@ import os
 import json
 import time
 import zipfile
+import shutil
 
 from minio import Minio
 from minio.error import S3Error
@@ -126,7 +127,7 @@ def callback(ch, method, properties, body):
                 records.append(record)
 
                 # cleanup the folder
-                os.rmdir('temp-dir')
+                shutil.rmtree('temp-dir')
                     
             except Exception as e:
                 logger.info('error processing key %s, from bucket %s, error message: %s', key, BUCKET_NAME, e)
