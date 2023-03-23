@@ -111,7 +111,7 @@ def callback(ch, method, properties, body):
                     logger.info('file downloaded %s', file_name)
 
                     # post file to minio in its own folder
-                    client.fput_object(UNPACKED_BUCKET_NAME, folder_name + '/' + file_name, file_name)
+                    client.fput_object(UNPACKED_BUCKET_NAME, folder_name + '/' + file_name, input_zip.read(file_name))
 
                     i += 1
                     unzipped.append({'id': i, 'file': folder_name + '/' + file_name, 'bucket': UNPACKED_BUCKET_NAME})
