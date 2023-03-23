@@ -102,17 +102,39 @@ def callback(ch, method, properties, body):
                 # name the folder using now time
                 folder_name = time.strftime("%Y%m%d-%H%M%S")
 
+
+                input_zip=zipfile.ZipFile(DOWNLOADED_FILE_NAME)
+                for file_name in input_zip.namelist():
+                    logger('file downloaded %s', file_name)
+
                 with zipfile.ZipFile(DOWNLOADED_FILE_NAME) as archive:
                     i = 0
-                    archive.extractall()
-                    for file in archive.namelist():
-                        print(file)
+                    input_zip.read(archive)
+                    
+                    for file in input_zip.namelist():
 
                         # post file to minio in its own folder
                         client.fput_object(UNPACKED_BUCKET_NAME, folder_name + '/' + file, file)
 
                         i += 1
                         unzipped.append({'id': i, 'file': folder_name + '/' + file, 'bucket': UNPACKED_BUCKET_NAME})
+
+
+
+                # with zipfile.ZipFile(DOWNLOADED_FILE_NAME) as archive:
+                #     i = 0
+                #     archive.extractall()
+                    
+                #     for file in archive.namelist():
+
+
+                #         # post file to minio in its own folder
+                #         client.fput_object(UNPACKED_BUCKET_NAME, folder_name + '/' + file, file)
+
+                #         i += 1
+                #         unzipped.append({'id': i, 'file': folder_name + '/' + file, 'bucket': UNPACKED_BUCKET_NAME})
+
+                        
 
                 # update event
                 record['unzipped'] = unzipped
