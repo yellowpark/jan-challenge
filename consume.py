@@ -105,7 +105,7 @@ def callback(ch, method, properties, body):
 
                 input_zip=zipfile.ZipFile(DOWNLOADED_FILE_NAME)
                 for file_name in input_zip.namelist():
-                    logger('file downloaded %s', file_name)
+                    logger.info('file downloaded %s', file_name)
 
                 with zipfile.ZipFile(DOWNLOADED_FILE_NAME) as archive:
                     i = 0
@@ -141,7 +141,7 @@ def callback(ch, method, properties, body):
                 records.append(record)
                     
             except Exception as e:
-                logger.info('error processing key %s, from bucket %s, error message: ', key, BUCKET_NAME, e)
+                logger.info('error processing key %s, from bucket %s, error message: %s', key, BUCKET_NAME, e)
 
 
         publish_message(records)
