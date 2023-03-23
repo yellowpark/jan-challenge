@@ -81,9 +81,10 @@ def callback(ch, method, properties, body):
 
     json_body = json.loads(body)
 
-    #check new data type
-    # event = json.dumps(body.decode())
     records = []
+
+    # create a folder for extracting the files into
+    extract_folder = 'temp-dir'
 
     # process each record in the event
     if 'EventName' in json_body and json_body['EventName'] == 's3:ObjectCreated:Put':
@@ -105,7 +106,9 @@ def callback(ch, method, properties, body):
 
                 input_zip=zipfile.ZipFile(DOWNLOADED_FILE_NAME)
 
-                input_zip.extractall()
+
+                os.mkdir(extract_folder)
+                input_zip.extractall(extract_folder)
                 
                 # create a counter to use as the id of the file in the json object
                 i = 0
@@ -113,35 +116,17 @@ def callback(ch, method, properties, body):
                     logger.info('file downloaded %s', file_name)
 
                     # post file to minio in its own folder
-                    client.fput_object(UNPACKED_BUCKET_NAME, folder_name + '/' + file_name, file_name)
+                    client.fput_object(UNPACKED_BUCKET_NAME, folder_name + '/' + file_name, extract_folder + '/' + file_name)
 
                     i += 1
                     unzipped.append({'id': i, 'file': folder_name + '/' + file_name, 'bucket': UNPACKED_BUCKET_NAME})
-
-                    # clean up the file
-                    os.remove(file_name)
-
-                # with zipfile.ZipFile(DOWNLOADED_FILE_NAME) as archive:
-                #     i = 0
-                #     archive.extractall()
-                    
-                #     for file in archive.namelist():
-
-
-                #         # post file to minio in its own folder
-                #         client.fput_object(UNPACKED_BUCKET_NAME, folder_name + '/' + file, file)
-
-                #         i += 1
-                #         unzipped.append({'id': i, 'file': folder_name + '/' + file, 'bucket': UNPACKED_BUCKET_NAME})
-
-                        
 
                 # update event
                 record['unzipped'] = unzipped
                 records.append(record)
 
-                # cleanup the file
-                os.remove(DOWNLOADED_FILE_NAME)
+                # cleanup the folder
+                os.rmdir('temp-dir')
                     
             except Exception as e:
                 logger.info('error processing key %s, from bucket %s, error message: %s', key, BUCKET_NAME, e)
